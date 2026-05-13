@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Renko Charity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-gray-950">
+
+    <!-- Simple Sidebar/Nav placeholder -->
+    <nav class="glass sticky top-0 z-50 px-8 py-4 flex justify-between items-center mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-bolt text-emerald-500"></i>
+            </div>
+            <span class="font-black text-xl tracking-tighter">RENKO<span class="text-emerald-500">.</span></span>
+        </div>
+        <div class="flex items-center gap-6">
+            <a href="/explore"
+                class="text-xs font-bold hover:text-emerald-500 transition-colors uppercase tracking-widest">Explorer</a>
+            <form th:action="@{/logout}" method="post" class="inline">
+                <button type="submit"
+                    class="px-6 py-3 bg-gray-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all">Déconnexion</button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-black text-gray-900 tracking-tight mb-2">Tableau de <span
+                    class="text-emerald-500">Bord</span></h1>
+            <p class="text-gray-500 font-medium">Gérez vos utilisateurs, initiatives et suivez les dons en temps réel.
+            </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Utilisateurs</p>
+                <h2 class="text-3xl font-black text-gray-900" th:text="${totalUsers ?: 0}">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Initiatives</p>
+                <h2 class="text-3xl font-black text-gray-900" th:text="${totalActions ?: 0}">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Organisations</p>
+                <h2 class="text-3xl font-black text-blue-500" th:text="${totalOrgs ?: 0}">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Dons Totaux</p>
+                <h2 class="text-3xl font-black text-emerald-500" th:text="${(totalDonationsAmount ?: 0.0) + ' €'}">0 €
+                </h2>
+            </div>
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-gray-50">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Status</p>
+                <div class="flex items-center gap-2 mt-1">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-bold text-emerald-500 uppercase tracking-widest">OK</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Organizations -->
+        <div th:if="${not #lists.isEmpty(pendingOrgs)}" class="bg-white rounded-[2.5rem] shadow-xl border border-emerald-100 overflow-hidden mb-12">
+            <div class="px-10 py-8 border-b border-gray-50 bg-emerald-50/30 flex justify-between items-center">
+                <h3 class="text-xl font-black text-gray-900">Demandes d'<span class="text-emerald-600">Organisations</span></h3>
+                <span class="px-3 py-1 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase" th:text="${#lists.size(pendingOrgs) + ' en attente'}"></span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50">
+                            <th class="px-10 py-4">Organisation</th>
+                            <th class="px-10 py-4">Contact / Email</th>
+                            <th class="px-10 py-4">Identifiant Fiscal</th>
+                            <th class="px-10 py-4 text-right">Décision</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr th:each="org : ${pendingOrgs}" class="hover:bg-emerald-50/20 transition-colors">
+                            <td class="px-10 py-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
+                                        <img th:if="${org.logoUrl}" th:src="${org.logoUrl}" class="w-full h-full object-cover">
+                                        <i th:unless="${org.logoUrl}" class="fa-solid fa-building text-gray-400"></i>
+                                    </div>
+                                    <span class="font-black text-gray-900" th:text="${org.name}"></span>
+                                </div>
+                            </td>
+                            <td class="px-10 py-6">
+                                <p class="text-xs font-bold text-gray-900" th:text="${org.mainContact ?: 'Non spécifié'}"></p>
+                                <p class="text-[10px] text-gray-400 font-medium" th:text="${org.adminUser?.email ?: 'Pas d''email'}"></p>
+                            </td>
+                            <td class="px-10 py-6 text-xs font-black text-gray-500" th:text="${org.taxId}"></td>
+                            <td class="px-10 py-6 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <form th:action="@{'/admin/organizations/approve/' + ${org.id}}" method="post" class="inline">
+                                        <button type="submit" class="px-4 py-2 bg-emerald-500 text-white text-[10px] font-black rounded-xl uppercase hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">Approuver</button>
+                                    </form>
+                                    <form th:action="@{'/admin/organizations/reject/' + ${org.id}}" method="post" class="inline">
+                                        <button type="submit" onclick="return confirm('Voulez-vous vraiment rejeter cette demande ?')" class="px-4 py-2 bg-red-500 text-white text-[10px] font-black rounded-xl uppercase hover:bg-red-600 transition-all shadow-lg shadow-red-500/20">Rejeter</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Organizations Table -->
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-50 overflow-hidden mb-12">
+            <div class="px-10 py-8 border-b border-gray-50 flex justify-between items-center">
+                <h3 class="text-xl font-black text-gray-900">Toutes les <span
+                        class="text-blue-500">Organisations</span></h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50">
+                            <th class="px-10 py-4">Organisation</th>
+                            <th class="px-10 py-4">Contact</th>
+                            <th class="px-10 py-4">Statut</th>
+                            <th class="px-10 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr th:each="org : ${organizations}" class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-10 py-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border border-gray-50">
+                                        <img th:if="${org.logoUrl}" th:src="${org.logoUrl}" class="w-full h-full object-cover">
+                                        <i th:unless="${org.logoUrl}" class="fa-solid fa-building text-gray-300"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-black text-gray-900" th:text="${org.name}"></p>
+                                        <p class="text-[10px] text-gray-400" th:text="${org.taxId}"></p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-10 py-6">
+                                <p class="text-xs font-bold text-gray-900" th:text="${org.mainContact}"></p>
+                                <p class="text-[10px] text-gray-400" th:text="${org.adminUser?.email}"></p>
+                            </td>
+                            <td class="px-10 py-6">
+                                <span th:if="${org.approved}" class="px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-600">Approuvée</span>
+                                <span th:unless="${org.approved}" class="px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-orange-100 text-orange-600">En attente</span>
+                            </td>
+                            <td class="px-10 py-6 text-right">
+                                <div class="flex justify-end gap-3">
+                                    <a th:href="@{'/admin/organizations/edit/' + ${org.id}}" class="text-blue-500 hover:text-blue-700 transition-colors"><i class="fa-solid fa-pen-to-square"></i></a>
+                                    <a href="#" th:data-url="@{'/admin/organizations/delete/' + ${org.id}}" onclick="showDeleteModal(event, 'Supprimer cette organisation définitivement ?')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-50 overflow-hidden mb-12">
+            <div class="px-10 py-8 border-b border-gray-50 flex justify-between items-center">
+                <h3 class="text-xl font-black text-gray-900">Gestion des <span
+                        class="text-emerald-500">Utilisateurs</span></h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50">
+                            <th class="px-10 py-4">Utilisateur</th>
+                            <th class="px-10 py-4">Rôle</th>
+                            <th class="px-10 py-4">Solde</th>
+                            <th class="px-10 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr th:each="user : ${users}" class="hover:bg-gray-50/50">
+                            <td class="px-10 py-6">
+                                <p class="font-black text-gray-900"
+                                    th:text="${user['firstName'] + ' ' + user['lastName']}"></p>
+                                <p class="text-[10px] text-gray-400" th:text="${user['email']}"></p>
+                            </td>
+                            <td class="px-10 py-6">
+                                <span
+                                    class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-blue-100 text-blue-600"
+                                    th:text="${user['role']}"></span>
+                            </td>
+                            <td class="px-10 py-6 font-black text-gray-900" th:text="${user['balance'] + ' €'}"></td>
+                            <td class="px-10 py-6 text-right">
+                                <a th:if="${user['id'] != null}" href="#" th:data-url="@{'/admin/users/delete/' + ${user['id']}}"
+                                    onclick="showDeleteModal(event, 'Voulez-vous vraiment supprimer cet utilisateur ?')"
+                                    class="text-red-500 hover:text-red-700 transition-colors"><i
+                                        class="fa-solid fa-trash-can"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Initiatives Table -->
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-50 overflow-hidden mb-12">
+            <div class="px-10 py-8 border-b border-gray-50">
+                <h3 class="text-xl font-black text-gray-900">Suivi des <span class="text-blue-500">Initiatives</span>
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50">
+                            <th class="px-10 py-4">Titre</th>
+                            <th class="px-10 py-4">Catégorie</th>
+                            <th class="px-10 py-4">Objectif</th>
+                            <th class="px-10 py-4">Collecté</th>
+                            <th class="px-10 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr th:each="initiative : ${actions}" class="hover:bg-gray-50/50">
+                            <td class="px-10 py-6 font-bold text-gray-900"
+                                th:text="${initiative?.title ?: 'Sans titre'}"></td>
+                            <td class="px-10 py-6">
+                                <span class="text-[10px] font-bold text-gray-400 px-3 py-1 bg-gray-100 rounded-full"
+                                    th:text="${initiative?.category ?: 'Autre'}"></span>
+                            </td>
+                            <td class="px-10 py-6 font-black text-gray-900"
+                                th:text="${(initiative?.targetAmount ?: 0.0) + ' €'}"></td>
+                            <td class="px-10 py-6 font-black text-emerald-600"
+                                th:text="${(initiative?.currentAmount ?: 0.0) + ' €'}"></td>
+                            <td class="px-10 py-6 text-right">
+                                <a th:if="${initiative?.id != null}"
+                                    th:href="@{'/admin/actions/edit/' + ${initiative.id}}"
+                                    class="text-blue-500 hover:text-blue-700 mr-4"><i class="fa-solid fa-pen"></i></a>
+                                <a th:if="${initiative?.id != null}" href="#"
+                                    th:data-url="@{'/admin/actions/delete/' + ${initiative.id}}"
+                                    onclick="showDeleteModal(event, 'Supprimer cette initiative ?')"
+                                    class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash-can"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Donation History -->
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-gray-50 overflow-hidden">
+            <div class="px-10 py-8 border-b border-gray-50">
+                <h3 class="text-xl font-black text-gray-900">Historique des <span class="text-purple-500">Dons</span>
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50">
+                            <th class="px-10 py-4">Utilisateur</th>
+                            <th class="px-10 py-4">Date</th>
+                            <th class="px-10 py-4 text-right">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <tr th:each="donation : ${donations}" class="hover:bg-gray-50/50">
+                            <td class="px-10 py-6 text-xs font-bold text-gray-900"
+                                th:text="${donation?.userId != null ? 'UID: ' + donation.userId : 'Anonyme'}"></td>
+                            <td class="px-10 py-6 text-[10px] text-gray-400 font-bold"
+                                th:text="${donation?.date ?: '--'}"></td>
+                            <td class="px-10 py-6 text-right font-black text-emerald-600"
+                                th:text="${(donation?.amount ?: 0.0) + ' €'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Delete Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="hideDeleteModal()"></div>
+        <!-- Modal Content -->
+        <div class="relative bg-white rounded-[2rem] shadow-2xl p-10 max-w-md w-full mx-4 transform scale-95 opacity-0 transition-all duration-300" id="deleteModalContent">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-20 h-20 bg-red-50 rounded-[1.5rem] flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-black text-gray-900 mb-2">Confirmer la suppression</h3>
+                <p id="deleteModalMessage" class="text-gray-500 font-medium mb-8">Êtes-vous sûr ?</p>
+                <div class="flex gap-4 w-full">
+                    <button onclick="hideDeleteModal()" class="flex-1 py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
+                        Annuler
+                    </button>
+                    <a id="deleteModalConfirm" href="#" class="flex-1 py-4 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all text-center shadow-lg shadow-red-500/20">
+                        Supprimer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDeleteModal(event, message) {
+            event.preventDefault();
+            const url = event.currentTarget.getAttribute('data-url');
+            document.getElementById('deleteModalMessage').textContent = message;
+            document.getElementById('deleteModalConfirm').href = url;
+            const modal = document.getElementById('deleteModal');
+            const content = document.getElementById('deleteModalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function hideDeleteModal() {
+            const content = document.getElementById('deleteModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                const modal = document.getElementById('deleteModal');
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+</body>
+
+</html>

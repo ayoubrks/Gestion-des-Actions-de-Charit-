@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Mon Profil - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow pt-32 pb-24 px-4">
+        <div class="max-w-5xl mx-auto space-y-8">
+            <!-- Profile Header Card -->
+            <div class="glass rounded-[3rem] p-10 md:p-14 shadow-2xl border-white/50 relative overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-20 -mt-20"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                    <div class="relative group">
+                        <div class="w-40 h-40 rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 text-6xl font-black transition-transform duration-500 group-hover:scale-105">
+                            <img th:if="${user.profileImageUrl != null}" th:src="${user.profileImageUrl}" class="w-full h-full object-cover">
+                            <span th:unless="${user.profileImageUrl != null}" th:text="${user.firstName.substring(0,1) + user.lastName.substring(0,1)}"></span>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-emerald-500 border border-gray-50">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                    </div>
+
+                    <div class="text-center md:text-left flex-grow">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 border"
+                             th:classappend="${user.role.name() == 'ROLE_SUPER_ADMIN' ? 'bg-blue-50 text-blue-600 border-blue-100' : (user.role.name() == 'ROLE_ORG_ADMIN' ? 'bg-amber-50 text-amber-600 border-amber-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100')}">
+                            <i th:class="${user.role.name() == 'ROLE_SUPER_ADMIN' ? 'fa-solid fa-shield-crown' : (user.role.name() == 'ROLE_ORG_ADMIN' ? 'fa-solid fa-building-shield' : 'fa-solid fa-shield-check')}"></i>
+                            <span th:text="${user.role.name() == 'ROLE_SUPER_ADMIN' ? 'Compte Super Admin' : (user.role.name() == 'ROLE_ORG_ADMIN' ? 'Compte Organisation' : 'Compte Donateur')}"></span>
+                        </div>
+                        <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-2 tracking-tight" th:text="${user.firstName + ' ' + user.lastName}"></h1>
+                        <p class="text-gray-500 font-medium text-lg" th:text="${user.email}"></p>
+                        
+                        <div class="mt-8 flex flex-wrap gap-4 justify-center md:justify-start">
+                            <div class="px-6 py-3 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
+                                <i class="fa-solid fa-calendar-day text-gray-400"></i>
+                                <div>
+                                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Membre depuis</p>
+                                    <p class="text-sm font-bold text-gray-900">Janvier 2026</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-900 rounded-[2.5rem] p-10 text-center md:text-right shadow-2xl shadow-gray-200 min-w-[240px]">
+                        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-4">Solde Portefeuille</p>
+                        <p class="text-4xl font-black text-white" th:text="${#numbers.formatDecimal(user.balance, 1, 'COMMA', 2, 'POINT') + ' €'}"></p>
+                        <button onclick="document.getElementById('recharge-modal').classList.remove('hidden')" 
+                                class="mt-6 w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform active:scale-95">
+                            Recharger
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats & Settings Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Info Card -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="bg-white p-10 rounded-[3rem] shadow-xl border border-gray-50">
+                        <h3 class="text-xl font-black text-gray-900 mb-8 flex items-center gap-3">
+                            <i class="fa-solid fa-user-gear text-emerald-500"></i> Détails du Compte
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Prénom</label>
+                                <p class="text-lg font-bold text-gray-900 border-b border-gray-50 pb-2" th:text="${user.firstName}"></p>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nom</label>
+                                <p class="text-lg font-bold text-gray-900 border-b border-gray-50 pb-2" th:text="${user.lastName}"></p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email</label>
+                                <p class="text-lg font-bold text-gray-900 border-b border-gray-50 pb-2" th:text="${user.email}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="space-y-8">
+                    <div class="bg-emerald-600 p-10 rounded-[3rem] shadow-xl text-white relative overflow-hidden group">
+                        <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                        <h3 class="text-xl font-black mb-6 relative z-10">Vos Actions</h3>
+                        <div class="space-y-4 relative z-10">
+                            <a th:if="${user.role.name() == 'ROLE_SUPER_ADMIN'}" href="/admin/dashboard" 
+                               class="block w-full py-4 bg-white text-blue-600 hover:bg-blue-50 border border-white/20 rounded-2xl text-center font-black uppercase text-[10px] tracking-widest transition-all shadow-lg shadow-blue-900/20">
+                                <i class="fa-solid fa-gauge-high mr-2"></i> Dashboard Admin
+                            </a>
+                            <a href="/profile/settings" class="block w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 rounded-2xl text-center font-bold transition-all">
+                                Paramètres
+                            </a>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="w-full py-4 bg-red-500/20 hover:bg-red-500/40 border border-red-500/20 rounded-2xl text-center font-bold text-red-100 transition-all">
+                                    Déconnexion
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recharge Modal -->
+        <div id="recharge-modal" class="fixed inset-0 bg-gray-900/40 backdrop-blur-md hidden flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+            <div class="bg-white rounded-[3rem] p-10 md:p-14 max-w-md w-full shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-300">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16"></div>
+                
+                <div class="flex justify-between items-center mb-10">
+                    <h2 class="text-3xl font-black text-gray-900 tracking-tight">Recharger</h2>
+                    <button onclick="document.getElementById('recharge-modal').classList.add('hidden')" class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+
+                <form action="/wallet/topup" method="POST" class="space-y-8">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="space-y-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Montant à ajouter (€)</label>
+                        <div class="relative">
+                            <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-black text-xl">€</span>
+                            <input type="number" name="amount" min="1" step="0.5" required 
+                                   class="w-full pl-12 pr-6 py-6 bg-gray-50 border border-gray-100 rounded-[2rem] focus:bg-white focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all font-black text-2xl shadow-inner"
+                                   placeholder="50.00">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white rounded-[2rem] font-black text-lg shadow-xl shadow-blue-200 transition-all transform active:scale-95 flex items-center justify-center gap-3">
+                        <i class="fa-brands fa-stripe text-2xl"></i> Continuer vers Stripe
+                    </button>
+                </form>
+                
+                <p class="mt-8 text-[10px] font-bold text-gray-400 text-center uppercase tracking-widest">
+                    <i class="fa-solid fa-lock mr-1"></i> Paiement 100% Sécurisé
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Notifications -->
+    <div th:if="${param.topup == 'success'}" 
+         class="fixed bottom-8 right-8 bg-blue-600 text-white px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-4 animate-in slide-in-from-right-full duration-700">
+        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-check text-xl"></i>
+        </div>
+        <div>
+            <p class="font-black text-sm uppercase">Recharge réussie !</p>
+            <p class="text-xs font-medium opacity-80">Votre solde a été mis à jour instantanément.</p>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

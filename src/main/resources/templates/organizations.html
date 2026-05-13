@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Nos Organisations Partenaires - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow pt-32 pb-24 px-4">
+        <div class="max-w-7xl mx-auto space-y-16">
+            
+            <!-- Header Section -->
+            <div class="text-center space-y-6 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                    <i class="fa-solid fa-hand-holding-heart"></i> Impact Collectif
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black text-gray-900 tracking-tight leading-[1.1]">
+                    Ils font <span class="text-emerald-500">changer</span> les choses
+                </h1>
+                <p class="text-xl text-gray-500 font-medium leading-relaxed">
+                    Découvrez les organisations visionnaires qui utilisent Renko pour transformer des vies. 
+                    Chaque partenaire est rigoureusement vérifié pour garantir la transparence totale.
+                </p>
+            </div>
+
+            <!-- Success Message -->
+            <div th:if="${param.success == 'registration'}" 
+                 class="p-10 glass border-emerald-100 rounded-[3rem] flex flex-col md:flex-row items-center gap-8 animate-in zoom-in-95 duration-500 shadow-2xl shadow-emerald-100/50">
+                <div class="w-24 h-24 rounded-[2rem] bg-emerald-500 text-white flex items-center justify-center flex-shrink-0 shadow-2xl shadow-emerald-200">
+                    <i class="fa-solid fa-paper-plane text-4xl"></i>
+                </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-3xl font-black text-gray-900 mb-2 tracking-tight">Demande envoyée !</h3>
+                    <p class="text-gray-500 font-medium text-lg italic">Votre organisation a été enregistrée. Notre équipe examinera votre dossier sous 48h.</p>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="glass p-10 md:p-14 rounded-[3rem] border-white/50 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl shadow-gray-200/50 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-1000"></div>
+                <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                    <div class="w-20 h-20 rounded-[1.5rem] bg-emerald-600 text-white flex items-center justify-center shadow-2xl shadow-emerald-100">
+                        <i class="fa-solid fa-plus text-3xl"></i>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h4 class="text-2xl font-black text-gray-900 tracking-tight">Devenir Partenaire ?</h4>
+                        <p class="text-gray-500 font-medium text-lg">Inscrivez votre structure pour lever des fonds en toute sécurité.</p>
+                    </div>
+                </div>
+                <a href="/organizations/new" class="w-full lg:w-auto px-12 py-6 bg-gray-900 hover:bg-black text-white rounded-[2rem] font-black text-sm uppercase tracking-widest transition-all transform hover:-translate-y-1 shadow-2xl relative z-10">
+                    Enregistrer mon organisation
+                </a>
+            </div>
+
+            <!-- Organization Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <!-- Fallback -->
+                <div th:if="${#lists.isEmpty(organizations)}" class="col-span-full py-32 text-center bg-white rounded-[4rem] border border-gray-50 shadow-inner">
+                    <div class="w-32 h-32 mx-auto bg-gray-50 rounded-[2.5rem] flex items-center justify-center mb-8 text-gray-200">
+                        <i class="fa-solid fa-building-circle-exclamation text-5xl"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-gray-900 mb-4 tracking-tight">Bientôt de nouveaux partenaires</h3>
+                    <p class="text-gray-500 max-w-md mx-auto font-medium">Nous validons actuellement plusieurs organisations. Revenez très bientôt.</p>
+                </div>
+
+                <!-- Org Card -->
+                <div th:each="org : ${organizations}" 
+                     class="group bg-white rounded-[3.5rem] p-10 transition-all duration-700 hover:shadow-[0_40px_80px_-15px_rgba(16,185,129,0.15)] border border-gray-100 flex flex-col items-center text-center relative overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                    
+                    <!-- Logo -->
+                    <div class="relative mb-10 group-hover:translate-y-[-10px] transition-transform duration-700">
+                        <div class="w-32 h-32 bg-white rounded-[2rem] overflow-hidden flex items-center justify-center border-8 border-gray-50 shadow-2xl group-hover:border-emerald-50 transition-colors">
+                            <img th:if="${org.logoUrl != null}" th:src="${org.logoUrl}" class="w-full h-full object-cover">
+                            <i th:unless="${org.logoUrl != null}" class="fa-solid fa-building-ngo text-5xl text-emerald-400"></i>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-emerald-500 text-white w-10 h-10 rounded-2xl flex items-center justify-center border-4 border-white shadow-xl">
+                            <i class="fa-solid fa-check text-xs"></i>
+                        </div>
+                    </div>
+
+                    <h3 th:text="${org.name}" class="text-3xl font-black text-gray-900 mb-4 group-hover:text-emerald-600 transition-colors tracking-tight"></h3>
+                    
+                    <div class="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-8">
+                        <i class="fa-solid fa-location-dot text-emerald-500"></i>
+                        <span th:text="${org.legalAddress}"></span>
+                    </div>
+
+                    <p th:text="${org.description}" class="text-gray-500 mb-10 text-base font-medium leading-relaxed line-clamp-3"></p>
+                    
+                    <div class="mt-auto w-full pt-8 border-t border-gray-50 flex items-center justify-between">
+                        <div class="text-left">
+                            <span class="block text-[10px] font-black text-gray-400 uppercase tracking-tighter mb-1">Contact</span>
+                            <span th:text="${org.mainContact}" class="text-sm font-bold text-gray-900"></span>
+                        </div>
+                        <a href="/explore" class="w-14 h-14 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white group-hover:rotate-45 transition-all duration-500 shadow-sm">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

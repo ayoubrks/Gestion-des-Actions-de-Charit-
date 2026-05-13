@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Connexion - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow flex items-center justify-center pt-32 pb-24 px-4 relative overflow-hidden">
+        <!-- Background Orbs -->
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl"></div>
+
+        <div class="max-w-md w-full relative z-10">
+            <div class="glass p-10 rounded-[3rem] shadow-2xl border-white/50">
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500 text-white mb-6 shadow-xl shadow-emerald-200">
+                        <i class="fa-solid fa-lock text-2xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-black text-gray-900 tracking-tight">Bon retour !</h2>
+                    <p class="mt-3 text-gray-500 font-medium">
+                        Heureux de vous revoir parmi nous.
+                    </p>
+                </div>
+                
+                <div th:if="${param.error}" class="mb-6 p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold text-center border border-red-100 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i> Email ou mot de passe invalide.
+                </div>
+                
+                <div th:if="${param.registered}" class="mb-6 p-4 bg-emerald-50 text-emerald-600 rounded-2xl text-xs font-bold text-center border border-emerald-100 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> Inscription réussie ! Connectez-vous.
+                </div>
+                
+                <form class="space-y-6" action="/login" method="POST">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Adresse Email</label>
+                            <input name="username" type="email" required 
+                                   class="w-full px-6 py-4 bg-white/50 border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-gray-300 shadow-inner" 
+                                   placeholder="nom@exemple.com">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Mot de passe</label>
+                            <input name="password" type="password" required 
+                                   class="w-full px-6 py-4 bg-white/50 border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-gray-300 shadow-inner" 
+                                   placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end">
+                        <a href="#" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors">
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="w-full py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-black text-lg shadow-xl shadow-emerald-200 transition-all transform hover:-translate-y-1 active:scale-95">
+                        Se connecter
+                    </button>
+                </form>
+                
+                <div class="mt-10 text-center">
+                    <p class="text-sm text-gray-500">
+                        Pas encore de compte ? <br/>
+                        <a href="/register" class="text-emerald-600 font-black hover:underline mt-2 inline-block">Créer un compte gratuitement</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Explorer les Initiatives - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow pt-32 pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div th:if="${error}" class="mb-12 p-8 bg-red-50 border border-red-100 rounded-[2.5rem] flex items-center gap-6 animate-in slide-in-from-top-8 duration-700">
+                <div class="w-16 h-16 bg-red-500 text-white rounded-3xl flex items-center justify-center text-2xl shadow-xl shadow-red-100">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-red-900 mb-1">Attention</h3>
+                    <p class="text-red-600 font-medium" th:text="${error}"></p>
+                </div>
+            </div>
+
+            <div class="mb-12">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-4">
+                    <i class="fa-solid fa-magnifying-glass"></i> Découverte
+                </div>
+                <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight">Explorer les <span class="gradient-text">initiatives</span></h1>
+                <p class="text-gray-500 text-lg max-w-2xl leading-relaxed">Soutenez les projets qui résonnent avec vos valeurs. Chaque action est une opportunité de créer un impact durable.</p>
+            </div>
+
+            <!-- Filters UI -->
+            <div class="flex flex-wrap items-center gap-3 mb-12">
+                <a href="/explore" class="px-8 py-3 rounded-2xl font-bold transition-all duration-300"
+                   th:classappend="${selectedCategory == null} ? 'bg-gray-900 text-white shadow-xl shadow-gray-200' : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-100'">
+                    Toutes les causes
+                </a>
+                <a th:each="cat : ${ {'Education', 'Santé', 'Environnement', 'Urgence'} }" 
+                   th:href="@{/explore(category=${cat})}" 
+                   class="px-8 py-3 rounded-2xl font-bold transition-all duration-300"
+                   th:classappend="${selectedCategory == cat} ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-100' : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-100'"
+                   th:text="${cat == 'Education' ? 'Éducation' : cat}">
+                </a>
+            </div>
+
+            <!-- Action Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <!-- Fallback when no actions -->
+                <div th:if="${#lists.isEmpty(actions)}" class="col-span-full py-24 text-center">
+                    <div class="w-24 h-24 mx-auto bg-gray-100 rounded-3xl flex items-center justify-center mb-6 text-gray-300">
+                        <i class="fa-solid fa-box-open text-4xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Aucune action trouvée</h3>
+                    <p class="text-gray-500 max-w-md mx-auto">Il n'y a pas encore d'actions caritatives disponibles dans cette catégorie. Revenez plus tard !</p>
+                </div>
+
+                <!-- Action Card -->
+                <div th:each="action : ${actions}" 
+                     class="group bg-white rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100 flex flex-col">
+                    
+                    <div class="h-64 relative overflow-hidden">
+                        <!-- Image Handling -->
+                        <img th:if="${action.mainImageUrl != null}" th:src="${action.mainImageUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Action">
+                        <img th:if="${action.mainImageUrl == null and action.mediaUrls != null and not #lists.isEmpty(action.mediaUrls)}" th:src="${action.mediaUrls[0]}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Action">
+                        <div th:if="${action.mainImageUrl == null and (action.mediaUrls == null or #lists.isEmpty(action.mediaUrls))}" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-50">
+                            <i class="fa-solid fa-image text-4xl text-emerald-200"></i>
+                        </div>
+                        
+                        <!-- Category Badge -->
+                        <div class="absolute top-6 right-6">
+                            <span th:text="${action.category}" class="glass px-4 py-2 rounded-full text-xs font-bold text-gray-900 shadow-sm border-white/50"></span>
+                        </div>
+                        
+                        <!-- Overlay on Hover -->
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <a th:href="@{'/action/' + ${action.id}}" class="px-6 py-3 bg-white text-gray-900 rounded-2xl font-bold text-sm shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                                Voir les détails
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 th:text="${action.title}" class="text-2xl font-extrabold text-gray-900 mb-4 line-clamp-1 group-hover:text-emerald-600 transition-colors"></h3>
+                        <p th:text="${action.description}" class="text-gray-500 mb-8 text-sm line-clamp-2 leading-relaxed"></p>
+                        
+                        <div class="mt-auto">
+                            <!-- Progress Bar -->
+                            <div class="mb-6">
+                                <div class="flex justify-between text-xs font-bold mb-3">
+                                    <span class="text-emerald-600 uppercase tracking-widest" th:text="${#numbers.formatDecimal(action.currentAmount ?: 0, 1, 'COMMA', 0, 'POINT')} + ' € récoltés'"></span>
+                                    <span class="text-gray-400" th:text="${action.targetAmount > 0 ? (T(java.lang.Math).round((action.currentAmount / action.targetAmount) * 100)) : 0} + '%'"></span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000" 
+                                         th:style="'width: ' + (${action.targetAmount > 0} ? (${action.currentAmount} / ${action.targetAmount} * 100) : 0) + '%'"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between pt-6 border-t border-gray-50">
+                                <div class="flex items-center text-xs font-bold text-gray-400 uppercase tracking-tighter">
+                                    <i class="fa-solid fa-location-dot text-emerald-500 mr-2"></i>
+                                    <span th:text="${action.location}"></span>
+                                </div>
+                                <div class="text-xs font-bold text-gray-900">
+                                    Cible: <span th:text="${#numbers.formatDecimal(action.targetAmount ?: 0, 1, 'COMMA', 0, 'POINT')} + ' €'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

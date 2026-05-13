@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Ajouter une Initiative - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow pt-32 pb-24 px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Breadcrumbs -->
+            <div class="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest mb-8 ml-4">
+                <a href="/admin/dashboard" class="hover:text-emerald-500 transition-colors">Dashboard</a>
+                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                <span class="text-gray-900">Nouvelle Initiative</span>
+            </div>
+
+            <div class="glass rounded-[3rem] p-10 md:p-14 shadow-2xl border-white/50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full -mr-32 -mt-32"></div>
+                
+                <div class="relative z-10 mb-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500 text-white mb-6 shadow-xl shadow-blue-100">
+                        <i class="fa-solid fa-heart-pulse text-2xl"></i>
+                    </div>
+                    <h1 class="text-4xl font-black text-gray-900 tracking-tight">Nouvelle Initiative</h1>
+                    <p class="text-gray-500 font-medium mt-2">Créez une action caritative impactante pour mobiliser la communauté.</p>
+                </div>
+                
+                <form th:action="@{/admin/actions/save}" th:object="${action}" method="POST" enctype="multipart/form-data" class="relative z-10 space-y-10">
+                    <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{currentAmount}">
+                    
+                    <div class="space-y-6">
+                        <div class="group">
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Titre de l'action</label>
+                            <input type="text" th:field="*{title}" required 
+                                   class="w-full px-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold text-lg placeholder:text-gray-200 shadow-inner" 
+                                   placeholder="Ex: Reforestation Urgente en Amazonie">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Catégorie</label>
+                                <div class="relative">
+                                    <select th:field="*{category}" 
+                                            class="w-full px-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold appearance-none shadow-inner cursor-pointer">
+                                        <option value="Education">Éducation</option>
+                                        <option value="Santé">Santé</option>
+                                        <option value="Environnement">Environnement</option>
+                                        <option value="Social">Social</option>
+                                        <option value="Urgence">Urgence</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none"></i>
+                                </div>
+                            </div>
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Objectif de Collecte (€)</label>
+                                <div class="relative">
+                                    <span class="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 font-black">€</span>
+                                    <input type="number" th:field="*{targetAmount}" required step="0.01" 
+                                           class="w-full pl-12 pr-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold text-lg shadow-inner" 
+                                           placeholder="10000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Localisation</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-location-dot absolute left-6 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                    <input type="text" th:field="*{location}" required 
+                                           class="w-full pl-12 pr-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold shadow-inner" 
+                                           placeholder="Ex: Brésil, Amazonie">
+                                </div>
+                            </div>
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Date de l'Action</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-calendar absolute left-6 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                    <input type="date" th:field="*{date}" 
+                                           class="w-full pl-12 pr-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold shadow-inner">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group">
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Image de Couverture</label>
+                            <div class="p-8 border-2 border-dashed border-gray-100 rounded-[2rem] bg-gray-50/50 flex flex-col md:flex-row items-center gap-8 group-hover:border-emerald-200 transition-colors">
+                                <div th:if="*{mainImageUrl}" class="w-32 h-24 rounded-2xl overflow-hidden border-4 border-white shadow-xl flex-shrink-0">
+                                    <img th:src="*{mainImageUrl}" class="w-full h-full object-cover">
+                                </div>
+                                <div th:unless="*{mainImageUrl}" class="w-20 h-20 bg-white rounded-2xl flex items-center justify-center text-gray-200 shadow-sm">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+                                </div>
+                                <div class="flex-grow text-center md:text-left">
+                                    <p class="text-sm font-bold text-gray-900 mb-1">Choisir un fichier</p>
+                                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-tighter">JPG, PNG ou WebP (Max 5MB)</p>
+                                    <input type="file" name="imageFile" accept="image/*" class="mt-4 text-xs font-bold text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-gray-900 file:text-white hover:file:bg-emerald-500 transition-all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group">
+                            <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Description Détaillée</label>
+                            <textarea th:field="*{description}" rows="6" 
+                                      class="w-full px-8 py-6 bg-white border border-gray-100 rounded-[2rem] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-medium text-gray-600 leading-relaxed shadow-inner placeholder:text-gray-200" 
+                                      placeholder="Expliquez ici les détails de l'initiative, son but et comment les fonds seront utilisés..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="pt-10 border-t border-gray-50 flex flex-col md:flex-row gap-6">
+                        <button type="submit" class="flex-grow py-6 bg-gray-900 hover:bg-black text-white rounded-2xl font-black text-lg uppercase tracking-widest transition-all transform hover:-translate-y-1 active:scale-95 shadow-2xl shadow-gray-200">
+                            Publier l'Initiative
+                        </button>
+                        <a href="/admin/dashboard" class="px-10 py-6 bg-white hover:bg-gray-50 text-gray-900 border border-gray-100 rounded-2xl font-black text-xs uppercase tracking-widest text-center transition-all">
+                            Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

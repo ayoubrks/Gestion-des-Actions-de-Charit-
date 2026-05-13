@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Enregistrer mon Organisation - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow pt-32 pb-24 px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Breadcrumbs -->
+            <div class="flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest mb-8 ml-4">
+                <a href="/organizations" class="hover:text-emerald-500 transition-colors">Organisations</a>
+                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                <span class="text-gray-900">Devenir Partenaire</span>
+            </div>
+
+            <div class="glass rounded-[3rem] p-10 md:p-14 shadow-2xl border-white/50 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full -mr-32 -mt-32"></div>
+                
+                <div class="relative z-10 mb-12">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-[2rem] bg-emerald-500 text-white mb-6 shadow-2xl shadow-emerald-100 rotate-3 transition-transform hover:rotate-0 duration-500">
+                        <i class="fa-solid fa-building-ngo text-4xl"></i>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight">Devenir Partenaire</h1>
+                    <p class="text-gray-500 font-medium mt-4 text-lg max-w-2xl leading-relaxed">Rejoignez l'écosystème Renko pour digitaliser vos collectes et amplifier votre impact social.</p>
+                </div>
+                
+                <form th:action="@{/organizations/new}" method="POST" enctype="multipart/form-data" class="relative z-10 space-y-12">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        <!-- Step 1: Legal -->
+                        <div class="space-y-8">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-lg">1</div>
+                                <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">Identité Légale</h3>
+                            </div>
+                            
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Nom de l'organisation</label>
+                                <input type="text" name="name" required 
+                                       class="w-full px-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold shadow-inner placeholder:text-gray-200" 
+                                       placeholder="Ex: Hope Foundation">
+                            </div>
+                            
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Identifiant Fiscal</label>
+                                <input type="text" name="taxId" required 
+                                       class="w-full px-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold shadow-inner placeholder:text-gray-200" 
+                                       placeholder="Ex: REG-123456789">
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Siège Social</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-location-dot absolute left-6 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                    <input type="text" name="legalAddress" required 
+                                           class="w-full pl-12 pr-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold shadow-inner placeholder:text-gray-200" 
+                                           placeholder="Ex: 12 Rue de la Paix, Paris">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Contact -->
+                        <div class="space-y-8">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-lg">2</div>
+                                <h3 class="text-lg font-black text-gray-900 uppercase tracking-tight">Contact & Visuels</h3>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Responsable Principal</label>
+                                <div class="relative">
+                                    <i class="fa-solid fa-user absolute left-6 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                    <input type="text" name="mainContact" required 
+                                           class="w-full pl-12 pr-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-bold shadow-inner placeholder:text-gray-200" 
+                                           placeholder="Ex: Karim Benali">
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Logo de l'organisation</label>
+                                <div class="relative">
+                                    <label class="flex flex-col items-center justify-center w-full h-32 px-8 py-5 bg-white border-2 border-dashed border-gray-100 rounded-2xl cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/10 transition-all group-hover:border-emerald-500">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-300 mb-2 group-hover:text-emerald-500"></i>
+                                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliquez pour importer</p>
+                                        </div>
+                                        <input type="file" name="logoFile" class="hidden" accept="image/*" required>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="group">
+                                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1 transition-colors group-focus-within:text-emerald-500">Mission & Vision</label>
+                                <textarea name="description" rows="2" 
+                                          class="w-full px-8 py-5 bg-white border border-gray-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/5 outline-none transition-all font-medium text-gray-600 shadow-inner resize-none placeholder:text-gray-200 leading-relaxed" 
+                                          placeholder="Expliquez brièvement l'impact de vos actions..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-10 border-t border-gray-50 flex flex-col items-center gap-8">
+                        <button type="submit" class="w-full py-6 bg-gray-900 hover:bg-black text-white rounded-[2rem] font-black text-lg uppercase tracking-widest transition-all transform hover:-translate-y-1 active:scale-95 shadow-2xl shadow-gray-200">
+                            Envoyer la Demande
+                        </button>
+                        <div class="flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-tighter bg-gray-50 px-6 py-3 rounded-full">
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                            Données sécurisées & Validation sous 48h
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

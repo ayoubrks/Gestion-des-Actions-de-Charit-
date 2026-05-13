@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Accueil - Renko Charity')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="relative min-h-[90vh] flex items-center pt-20 overflow-hidden">
+            <!-- Background Elements -->
+            <div class="absolute inset-0 z-0">
+                <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-400/10 rounded-full blur-3xl -mr-64 -mt-64"></div>
+                <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-400/10 rounded-full blur-3xl -ml-32 -mb-32"></div>
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div class="animate-in fade-in slide-in-from-left-8 duration-1000">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 text-emerald-600 text-sm font-bold mb-8 border border-emerald-100">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            Faisons la différence ensemble
+                        </div>
+                        <h1 class="text-6xl md:text-8xl font-black text-gray-900 leading-[1.1] mb-8 tracking-tighter">
+                            Chaque don <br/> <span class="gradient-text">compte.</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-12 leading-relaxed max-w-xl">
+                            Renko est la plateforme nouvelle génération qui connecte les donateurs passionnés aux causes qui transforment réellement le monde. Simple, transparent, impactant.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-6">
+                            <a th:if="${currentUser != null and currentUser.role.name() == 'ROLE_SUPER_ADMIN'}" href="/admin/dashboard" 
+                               class="px-10 py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-3xl font-black text-lg transition-all transform hover:-translate-y-1 shadow-2xl shadow-blue-500/20 text-center flex items-center justify-center gap-3">
+                                <i class="fa-solid fa-gauge-high"></i> Dashboard Admin
+                            </a>
+                            <a href="/explore" class="px-10 py-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-3xl font-bold text-lg transition-all transform hover:-translate-y-1 shadow-2xl shadow-emerald-500/20 text-center">
+                                Explorer les actions
+                            </a>
+                            <a th:if="${currentUser == null or currentUser.role.name() == 'ROLE_USER'}" href="/organizations/new" 
+                               class="px-10 py-5 bg-white hover:bg-gray-50 text-gray-900 border border-gray-100 rounded-3xl font-bold text-lg transition-all transform hover:-translate-y-1 shadow-xl shadow-gray-200/50 text-center">
+                                Rejoindre comme Organisation
+                            </a>
+                        </div>
+                        
+
+                    </div>
+                    
+                    <div class="relative hidden lg:block animate-in fade-in slide-in-from-right-8 duration-1000">
+                        <div class="relative z-10 rounded-[3rem] overflow-hidden shadow-2xl rotate-2">
+                            <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover" alt="Hero">
+                        </div>
+                        <!-- Floating Cards -->
+                        <div class="absolute -top-10 -left-10 glass p-6 rounded-3xl shadow-2xl border-white/50 animate-bounce-slow">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white">
+                                    <i class="fa-solid fa-heart"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-400 font-bold uppercase">Dons aujourd'hui</p>
+                                    <p class="text-xl font-black text-gray-900">+12 450 €</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-10 -right-10 bg-white p-6 rounded-3xl shadow-2xl border border-gray-50 animate-pulse-slow">
+                            <div class="flex items-center gap-4">
+                                <div class="flex -space-x-4">
+                                    <img src="https://i.pravatar.cc/100?u=1" class="w-10 h-10 rounded-full border-4 border-white">
+                                    <img src="https://i.pravatar.cc/100?u=2" class="w-10 h-10 rounded-full border-4 border-white">
+                                    <img src="https://i.pravatar.cc/100?u=3" class="w-10 h-10 rounded-full border-4 border-white">
+                                </div>
+                                <p class="text-sm font-bold text-gray-900">850+ Donateurs actifs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="py-32 bg-gray-900 relative overflow-hidden">
+            <div class="absolute inset-0 bg-emerald-500/5 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2"></div>
+            <div class="max-w-7xl mx-auto px-4 relative z-10">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                    <div>
+                        <div class="text-6xl font-black text-white mb-2">150+</div>
+                        <div class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Organisations</div>
+                    </div>
+                    <div>
+                        <div class="text-6xl font-black text-emerald-500 mb-2">12M+</div>
+                        <div class="text-white font-bold uppercase tracking-widest text-xs">Dons récoltés</div>
+                    </div>
+                    <div>
+                        <div class="text-6xl font-black text-white mb-2">850</div>
+                        <div class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Actions réussies</div>
+                    </div>
+                    <div>
+                        <div class="text-6xl font-black text-blue-500 mb-2">50k+</div>
+                        <div class="text-white font-bold uppercase tracking-widest text-xs">Donateurs</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-32 bg-white">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-20">
+                    <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Pourquoi choisir Renko ?</h2>
+                    <p class="text-gray-500 max-w-2xl mx-auto text-lg">Nous avons repensé la façon de donner pour la rendre plus humaine, plus rapide et plus transparente.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div class="group p-10 rounded-[3rem] bg-gray-50 hover:bg-emerald-500 transition-all duration-500 transform hover:-translate-y-2">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-emerald-500 mb-8 shadow-xl shadow-gray-200 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-bolt text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4 group-hover:text-white transition-colors">Instantanéité</h3>
+                        <p class="text-gray-500 group-hover:text-emerald-50/80 transition-colors">Votre don arrive directement dans le portefeuille de l'action choisie, sans intermédiaires inutiles.</p>
+                    </div>
+                    
+                    <div class="group p-10 rounded-[3rem] bg-gray-50 hover:bg-blue-500 transition-all duration-500 transform hover:-translate-y-2">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-blue-500 mb-8 shadow-xl shadow-gray-200 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-shield-check text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4 group-hover:text-white transition-colors">Vérification Totale</h3>
+                        <p class="text-gray-500 group-hover:text-blue-50/80 transition-colors">Toutes nos organisations partenaires sont soumises à un audit rigoureux avant d'être acceptées.</p>
+                    </div>
+                    
+                    <div class="group p-10 rounded-[3rem] bg-gray-50 hover:bg-purple-500 transition-all duration-500 transform hover:-translate-y-2">
+                        <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-purple-500 mb-8 shadow-xl shadow-gray-200 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-chart-line text-2xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4 group-hover:text-white transition-colors">Suivi d'Impact</h3>
+                        <p class="text-gray-500 group-hover:text-purple-50/80 transition-colors">Recevez des notifications en temps réel sur l'avancement concret des projets que vous soutenez.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+    <style>
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(-2deg); }
+        }
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-bounce-slow { animation: bounce-slow 4s infinite ease-in-out; }
+        .animate-pulse-slow { animation: pulse-slow 3s infinite ease-in-out; }
+    </style>
+</body>
+</html>
