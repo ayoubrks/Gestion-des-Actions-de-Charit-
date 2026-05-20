@@ -2,6 +2,7 @@ package com.devbuild.renko.controller;
 
 import com.devbuild.renko.entities.CharityAction;
 import com.devbuild.renko.repos.CharityActionRepository;
+import com.devbuild.renko.repos.OrganizationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,15 +16,25 @@ import java.util.List;
 public class ExploreController {
 
     private final CharityActionRepository charityActionRepository;
+    private final OrganizationRepository organizationRepository;
 
     @GetMapping("/explore")
-    public String explore(@RequestParam(required = false) String category, Model model) {
+    public String explore(@RequestParam(required = false) String category, 
+                          @RequestParam(required = false) String search, 
+                          Model model) {
         try {
             List<CharityAction> actions;
-            if (category != null && !category.isEmpty()) {
-                actions = charityActionRepository.findByCategoryAndOrganizationIdIsNullAndIsArchivedFalse(category);
+            boolean hasCategory = category != null && !category.isEmpty();
+            boolean hasSearch = search != null && !search.isEmpty();
+
+            if (hasCategory && hasSearch) {
+                actions = charityActionRepository.searchWithCategory(category, search);
+            } else if (hasCategory) {
+                actions = charityActionRepository.findByCategoryAndIsArchivedFalse(category);
+            } else if (hasSearch) {
+                actions = charityActionRepository.searchWithoutCategory(search);
             } else {
-                actions = charityActionRepository.findByOrganizationIdIsNullAndIsArchivedFalse();
+                actions = charityActionRepository.findByIsArchivedFalse();
             }
             model.addAttribute("actions", actions);
         } catch (Exception e) {
@@ -32,6 +43,7 @@ public class ExploreController {
         }
         
         model.addAttribute("selectedCategory", category);
+        model.addAttribute("search", search);
         return "explore";
     }
 
@@ -43,6 +55,12 @@ public class ExploreController {
         CharityAction action = charityActionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid action ID"));
         model.addAttribute("action", action);
+        
+        if (action.getOrganizationId() != null) {
+            organizationRepository.findById(action.getOrganizationId())
+                    .ifPresent(org -> model.addAttribute("organization", org));
+        }
+        
         return "action-details";
     }
 }

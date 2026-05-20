@@ -151,11 +151,6 @@ public class AdminController {
 
         if (action.getCurrentAmount() == null) action.setCurrentAmount(0.0);
         action.setArchived(false);
-        
-        // Ensure organizationId is set (use first available if null)
-        if (action.getOrganizationId() == null) {
-            organizationRepository.findAll().stream().findFirst().ifPresent(org -> action.setOrganizationId(org.getId()));
-        }
 
         charityActionRepository.save(action);
         
