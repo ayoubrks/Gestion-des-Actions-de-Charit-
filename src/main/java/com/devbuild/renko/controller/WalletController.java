@@ -67,16 +67,13 @@ public class WalletController {
         try {
             Session session = stripeService.retrieveSession(sessionId);
             if ("paid".equals(session.getPaymentStatus())) {
-                User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
-                Double amount = session.getAmountTotal() / 100.0;
-                
-                // On vérifie si l'argent n'a pas déjà été ajouté (via webhook par exemple)
-                // Pour simplifier ici on l'ajoute, mais en prod le webhook est plus fiable.
-                // Note: On pourrait marquer la session comme traitée en base.
-                
-                user.setBalance(user.getBalance() + amount);
-                userRepository.save(user);
-                
+                if (stripeService.markSessionAsProcessed(sessionId)) {
+                    User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
+                    Double amount = session.getAmountTotal() / 100.0;
+                    
+                    user.setBalance(user.getBalance() + amount);
+                    userRepository.save(user);
+                }
                 return "redirect:/profile?topup=success";
             }
         } catch (Exception e) {

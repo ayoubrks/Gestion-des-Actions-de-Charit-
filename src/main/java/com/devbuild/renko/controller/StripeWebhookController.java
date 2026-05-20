@@ -26,6 +26,7 @@ public class StripeWebhookController {
     private final DonationRepository donationRepository;
     private final UserRepository userRepository;
     private final CharityActionRepository charityActionRepository;
+    private final com.devbuild.renko.services.StripeService stripeService;
 
     @Value("${stripe.webhook.secret}")
     private String endpointSecret;
@@ -51,6 +52,11 @@ public class StripeWebhookController {
     }
 
     private void handleCheckoutSessionCompleted(Session session) {
+        if (!stripeService.markSessionAsProcessed(session.getId())) {
+            // Already processed by the success controller
+            return;
+        }
+        
         Map<String, String> metadata = session.getMetadata();
         String type = metadata.get("type");
         String userIdStr = metadata.get("userId");

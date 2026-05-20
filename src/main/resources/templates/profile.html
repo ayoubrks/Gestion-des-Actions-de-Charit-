@@ -148,6 +148,18 @@
             <p class="text-xs font-medium opacity-80">Votre solde a été mis à jour instantanément.</p>
         </div>
     </div>
+    
+    <!-- Error Notifications -->
+    <div th:if="${param.error != null and param.error[0] == 'already_has_organization'}" 
+         class="fixed bottom-8 right-8 bg-red-600 text-white px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-4 animate-in slide-in-from-right-full duration-700">
+        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+        </div>
+        <div>
+            <p class="font-black text-sm uppercase">Opération Impossible</p>
+            <p class="text-xs font-medium opacity-80">Vous gérez déjà une organisation partenaire.</p>
+        </div>
+    </div>
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>

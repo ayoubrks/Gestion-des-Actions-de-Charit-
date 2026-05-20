@@ -14,6 +14,13 @@ public class StripeService {
     @Value("${stripe.secret.key}")
     private String secretKey;
 
+    private final java.util.Set<String> processedSessions = java.util.Collections.synchronizedSet(new java.util.HashSet<>());
+
+    public boolean markSessionAsProcessed(String sessionId) {
+        // add returns true if it wasn't there, so we return true if we successfully marked it
+        return processedSessions.add(sessionId);
+    }
+
     @PostConstruct
     public void init() {
         Stripe.apiKey = secretKey;

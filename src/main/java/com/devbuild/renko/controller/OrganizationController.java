@@ -40,7 +40,13 @@ public class OrganizationController {
     }
 
     @GetMapping("/organizations/new")
-    public String registerForm(Model model) {
+    public String registerForm(Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            User user = userRepository.findByEmail(authentication.getName()).orElse(null);
+            if (user != null && user.getOrganization() != null) {
+                return "redirect:/profile?error=already_has_organization";
+            }
+        }
         return "organization-form";
     }
 
@@ -72,24 +78,29 @@ public class OrganizationController {
             }
         }
 
-        if (organization != null) {
-            organizationRepository.save(organization);
-        }
-        
-        user.setRole(Role.ROLE_ORG_ADMIN);
-        if (user != null) {
-            userRepository.save(user);
-        }
+        try {
+            if (organization != null) {
+                organizationRepository.save(organization);
+            }
+            
+            user.setRole(Role.ROLE_ORG_ADMIN);
+            if (user != null) {
+                userRepository.save(user);
+            }
 
-        // Update Security Context to reflect new role immediately
-        SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken(
-                authentication.getPrincipal(),
-                authentication.getCredentials(),
-                List.of(new SimpleGrantedAuthority(user.getRole().name()))
-            )
-        );
-        
-        return "redirect:/organizations?success=registration";
+            // Update Security Context to reflect new role immediately
+            SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                    authentication.getPrincipal(),
+                    authentication.getCredentials(),
+                    List.of(new SimpleGrantedAuthority(user.getRole().name()))
+                )
+            );
+            
+            return "redirect:/organizations?success=registration";
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // This happens if the user already has an organization or if taxId is not unique
+            return "redirect:/organizations/new?error=duplicate_or_invalid";
+        }
     }
 }

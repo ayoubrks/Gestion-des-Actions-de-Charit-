@@ -124,27 +124,26 @@ public class DonationController {
         try {
             com.stripe.model.checkout.Session session = stripeService.retrieveSession(sessionId);
             if ("paid".equals(session.getPaymentStatus())) {
-                User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
-                CharityAction action = charityActionRepository.findById(actionId).orElseThrow();
+                if (stripeService.markSessionAsProcessed(sessionId)) {
+                    User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
+                    CharityAction action = charityActionRepository.findById(actionId).orElseThrow();
 
-                // Enregistrer le don (si pas déjà fait par le webhook)
-                // Note: En production, il vaut mieux avoir une table "Transaction" pour éviter les doublons.
-                Donation donation = Donation.builder()
-                        .userId(user.getId())
-                        .charityActionId(actionId)
-                        .amount(amount)
-                        .date(LocalDateTime.now())
-                        .paymentMethod("Stripe (Carte)")
-                        .status("SUCCESS")
-                        .build();
-                donationRepository.save(donation);
+                    Donation donation = Donation.builder()
+                            .userId(user.getId())
+                            .charityActionId(actionId)
+                            .amount(amount)
+                            .date(LocalDateTime.now())
+                            .paymentMethod("Stripe (Carte)")
+                            .status("SUCCESS")
+                            .build();
+                    donationRepository.save(donation);
 
-                if (action.getCurrentAmount() == null) {
-                    action.setCurrentAmount(0.0);
+                    if (action.getCurrentAmount() == null) {
+                        action.setCurrentAmount(0.0);
+                    }
+                    action.setCurrentAmount(action.getCurrentAmount() + amount);
+                    charityActionRepository.save(action);
                 }
-                action.setCurrentAmount(action.getCurrentAmount() + amount);
-                charityActionRepository.save(action);
-
                 return "redirect:/donate/success?actionId=" + actionId + "&amount=" + amount;
             }
         } catch (Exception e) {
